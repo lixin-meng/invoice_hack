@@ -16,7 +16,7 @@ import logging
 import logging.config
 
 from werkzeug.utils import redirect
-
+app = Flask(__name__)
 
 # logging.config.fileConfig('logger.conf')
 print("Starting Smart Invoice Hack ")
@@ -161,5 +161,5 @@ def upload_file():
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
-      app.run(debug=True, use_reloader=True)          
+      #app.run(debug=True, use_reloader=True)          
 #    app.run(debug=True, port=5050)
