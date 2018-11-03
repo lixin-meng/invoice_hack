@@ -1,6 +1,7 @@
 import base64
 import io
 import os
+import pprint
 import re
 import requests
 
@@ -148,11 +149,13 @@ def upload_file():
 
         file_id = r.json()['id']
         status_path = "{}/{}.json".format('/tmp/rdisk', 'latest')
+        info = json.dumps(r.json(), indent=4)
         with open(status_path, "w") as fh:
-            fh.write(json.dumps(r.json()))
+            fh.write(info)
 
         # return json.dumps(r.json()), 200
-        return redirect(url_for('status', oid='latest'))
+        # return redirect(url_for('status', oid='latest'))
+        return render_template('status.html', info=info)
 
     return render_template('extract.html')
 
