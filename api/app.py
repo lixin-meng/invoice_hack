@@ -254,7 +254,7 @@ def extract_intents(request):
 @app.route('/status/<oid>', methods=['GET'])
 def status(oid=None):
 
-    result_file = "{}/{}.json".format('/tmp/rdisk', oid)
+    result_file = "{}.json".format('latest')
     with open(result_file, "r") as fh:
         content = fh.read()
 
@@ -279,7 +279,7 @@ def upload_file():
         r = requests.post(url, data=json.dumps(data), headers=headers)
 
         file_id = r.json()['id']
-        status_path = "{}/{}.json".format('/tmp/rdisk', 'latest')
+        status_path = "{}.json".format('latest')
         info = json.dumps(r.json(), indent=4)
         with open(status_path, "w") as fh:
             fh.write(info)
