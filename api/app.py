@@ -1,4 +1,5 @@
 import base64
+import io
 import os
 import re
 import requests
@@ -115,21 +116,17 @@ def extract_intents(request):
     input_file_name = file.filename
     input_file = os.path.join(target_folder, input_file_name)
     file.save(input_file)
-
     return target_folder, input_file, file_id
 
 
 @app.route('/status/<oid>', methods=['GET'])
 def status(oid=None):
 
-    fan_out_012 = oid[0:3]   # first three letters
-    fan_out_345 = oid[3:6]   # second three letters
-
-    result_file = "{}/{}/{}".format('/tmp/rdisk', fan_out_012, fan_out_345)
+    result_file = "{}/{}.json".format('/tmp/rdisk', oid)
     with open(result_file, "r") as fh:
         content = fh.read()
 
-    return render_template('status.html', oid=oid, content=content)
+    return content, 200
 
 
 @app.route('/extract', methods=['GET', 'POST'])
@@ -137,9 +134,10 @@ def upload_file():
     if request.method == 'POST':
         target_folder, input_file, fid = extract_intents(request)
 
+        # img_base64 = base64.b64encode(content.read())
         with open(input_file, 'rb') as image_file:
             img_base64 = base64.b64encode(image_file.read())
-
+        #
         url = 'http://35.232.51.61:5000/extract'
         # url = 'http://localhost:5000/extract'
         data = {'image': img_base64.decode('ascii'),
@@ -148,12 +146,13 @@ def upload_file():
         headers = {'Content-type': 'application/json'}
         r = requests.post(url, data=json.dumps(data), headers=headers)
 
-        # pdf_path = "{}/{}.json".format(target_folder, file_id)
-        # with open(pdf_path, "w") as fh:
-        #     fh.write(json.dumps(r.json()))
+        file_id = r.json()['id']
+        status_path = "{}/{}.json".format('/tmp/rdisk', 'latest')
+        with open(status_path, "w") as fh:
+            fh.write(json.dumps(r.json()))
 
-        return json.dumps(r.json()), 200
-        # return redirect(url_for('status', oid=fid))
+        # return json.dumps(r.json()), 200
+        return redirect(url_for('status', oid='latest'))
 
     return render_template('extract.html')
 
