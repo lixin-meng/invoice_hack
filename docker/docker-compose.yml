@@ -5,7 +5,7 @@ services:
   # docker build --squash -t chat_flow_python3 -f Dockerfile_python3 .
   #
   hack:
-    image: invoice_hack:v0.0.1
+    image: gcr.io/mlreader-hack/invoice_hack:v0.0.1
     container_name: hack_app_dev
     environment: 
       - PYTHONUNBUFFERED=1

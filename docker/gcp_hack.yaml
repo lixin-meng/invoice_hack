@@ -1,0 +1,67 @@
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "hack-app-stable"
+  namespace: "default"
+  labels:
+    app: "hack-app-stable"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "hack-app-stable"
+  template:
+    metadata:
+      labels:
+        app: "hack-app-stable"
+    spec:
+      volumes:
+      - name: tmp-rdisk-vol
+        emptyDir:
+          medium: Memory
+      containers:
+      - name: "hack"
+        image: "gcr.io/mlreader-hack/invoice_hack:v0.0.1"
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: tmp-rdisk-vol
+          mountPath: /tmp/rdisk
+        env:
+        - name: FLASK_APP
+          value: api/app.py
+        - name: FLASK_ENV
+          value: production
+---
+apiVersion: "autoscaling/v1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "hack-app-stable-hpa"
+  namespace: "default"
+  labels:
+    app: "hack-app-stable"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "hack-app-stable"
+    apiVersion: "apps/v1beta1"
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "hack-app-stable-service"
+  namespace: "default"
+  labels:
+    app: "hack-app-stable"
+spec:
+  ports:
+  - protocol: "TCP"
+    port: 5000
+    targetPort: 5000
+  selector:
+    app: "hack-app-stable"
+  type: "LoadBalancer"
+  externalTrafficPolicy: "Local"
+  loadBalancerIP: ""

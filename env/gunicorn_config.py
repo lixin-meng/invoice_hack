@@ -19,7 +19,7 @@ import multiprocessing
 #       range.
 #
 
-bind = '0.0.0.0:5000'
+bind = '0.0.0.0:5050'
 backlog = 2048
 
 #

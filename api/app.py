@@ -1,5 +1,7 @@
+import base64
 import os
 import re
+import requests
 
 import sys
 import subprocess
@@ -23,7 +25,7 @@ BLOCK_SIZE = 4
 DISCRETE_VALUES = BASE ** BLOCK_SIZE
 
 UPLOAD_FOLDER = '/tmp/rdisk'
-ALLOWED_EXTENSIONS = set(['csv'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg'])
 
 #
 # The entry point
@@ -110,29 +112,11 @@ def extract_intents(request):
     }
     content_str = json.dumps(content)
     target_folder, file_id = uniq_id(UPLOAD_FOLDER, content_str)
-    input_file_name = file_id + '_all.csv'
+    input_file_name = file.filename
     input_file = os.path.join(target_folder, input_file_name)
     file.save(input_file)
 
     return target_folder, input_file, file_id
-
-
-@app.route('/extract/<oid>', methods=['GET'])
-def output(oid=None):
-
-    fan_out_012 = oid[0:3]   # first three letters
-    fan_out_345 = oid[3:6]   # second three letters
-
-    target_folder = "{}/{}/{}/{}".format(UPLOAD_FOLDER, fan_out_012, fan_out_345, oid)
-    if not os.path.isdir(target_folder):
-        os.makedirs(target_folder)
-
-    tar_file_name = oid + '.tar.gz'
-    tar_file = os.path.join(target_folder, tar_file_name)
-    if not os.path.exists(tar_file):
-        redirect(url_for('status', oid=oid))
-
-    return send_from_directory(target_folder, tar_file_name)
 
 
 @app.route('/status/<oid>', methods=['GET'])
@@ -141,20 +125,38 @@ def status(oid=None):
     fan_out_012 = oid[0:3]   # first three letters
     fan_out_345 = oid[3:6]   # second three letters
 
-    return render_template('status.html', oid=oid, log=log_content, dir=ls_content)
+    result_file = "{}/{}/{}".format('/tmp/rdisk', fan_out_012, fan_out_345)
+    with open(result_file, "r") as fh:
+        content = fh.read()
+
+    return render_template('status.html', oid=oid, content=content)
 
 
-@app.route('/intents', methods=['GET', 'POST'])
+@app.route('/extract', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
         target_folder, input_file, fid = extract_intents(request)
-        log_file_path = os.path.join(target_folder, fid + "_log.txt")
 
-        # out, err = cmd.communicate()
-        return redirect(url_for('status', oid=fid))
+        with open(input_file, 'rb') as image_file:
+            img_base64 = base64.b64encode(image_file.read())
 
-    return render_template('intents.html')
+        url = 'http://35.232.51.61:5000/extract'
+        # url = 'http://localhost:5000/extract'
+        data = {'image': img_base64.decode('ascii'),
+                'features': [{'donate': '0'}]
+                }
+        headers = {'Content-type': 'application/json'}
+        r = requests.post(url, data=json.dumps(data), headers=headers)
+
+        # pdf_path = "{}/{}.json".format(target_folder, file_id)
+        # with open(pdf_path, "w") as fh:
+        #     fh.write(json.dumps(r.json()))
+
+        return json.dumps(r.json()), 200
+        # return redirect(url_for('status', oid=fid))
+
+    return render_template('extract.html')
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5050)
