@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Flow Discovery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+
+/* The slider itself */
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    width: 90%; /* Full-width */
+    height: 10px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}}
+</style>
+</head>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+<div class="w3-panel w3-margin w3-padding">
+    <h1>Intent Discovery</h1>
+    <form action="" method=post enctype=multipart/form-data>
+        <div class="w3-panel">
+            <div class="w3-row">
+                <div><p class="w3-tooltip">Clusters (up to, per iteration):
+                    <span style="position:absolute;left:0;bottom:18px"
+                          class="w3-text w3-tag w3-green">this needs to be redefined :) </span>
+                    <span class="w3-badge w3-green">?</span></p>
+                </div>
+                <div class="w3-col w3-container m6">
+                    <input type="range" min="1" max="1000" name="l3_clusters" id="l3_clusters" value="900" class="slider">
+                    &nbsp;&nbsp;&nbsp;
+                    <span id="l3_clusters_val">90</span>
+                </div>
+            </div>
+            <br>
+            <div class="w3-row">
+                <div><p class="w3-tooltip">Quality threshold:
+                    <span style="position:absolute;left:0;bottom:18px"
+                          class="w3-text w3-tag w3-green">control the quality of pruning and blending process.</span>
+                    <span class="w3-badge w3-green">?</span></p>
+                </div>
+                <div class="w3-col w3-container m6">
+                    <select class="w3-select w3-border " name="degree" value="1">
+                        <option value="1">1st degree (one word in common)</option>
+                        <option value="2" selected>2nd degree (two words in common)</option>
+                        <option value="3">3rd degree (three words in common)</option>
+                    </select>
+                    <div><br/> </div>
+                    <input type="range" min="0" max="100" name="coverage" id="coverage" value="40" class="slider">
+                    &nbsp;&nbsp;&nbsp;
+                    <span id="coverage_val">40</span>%
+                </div>
+            </div>
+            <br>
+            <div class="w3-row">
+                <div><p class="w3-tooltip">Turns to include:
+                    <span style="position:absolute;left:0;bottom:18px"
+                          class="w3-text w3-tag w3-green">how many transcripts to be included per conversation.</span>
+                    <span class="w3-badge w3-green">?</span></p>
+                </div>
+                <div class="w3-col w3-container m6">
+                    <input type="range" min="1" max="20" name="turn_count" id="turn_count" value="6" class="slider">
+                    &nbsp;&nbsp;&nbsp;
+                    <span id="turn_count_val">6</span>
+                </div>
+            </div>
+            <br>
+            <div class="w3-row">
+                <div><p class="w3-tooltip">Transcript file:
+                    <span style="position:absolute;left:0;bottom:18px"
+                          class="w3-text w3-tag w3-green">see notes below</span>
+                    <span class="w3-badge w3-green">?</span></p>
+                </div>
+                <div class="w3-col w3-container m6"><input type=file name=file></div>
+            </div>
+            <br>
+            <div class="w3-row">
+                <div class="w3-col w3-container m5"><p/></div>
+                <div class="w3-col w3-container m6"><input  type="submit" class="w3-btn w3-black" value="Process"></div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="w3-panel w3-margin w3-padding">
+    <header class="w3-container w3-light-grey">
+        <h4>Note, the input file is a CSV file with following columns</h4>
+    </header>
+    <div class="w3-card w3-margin w3-padding">
+        <ul class="w3-ul w3-card-4 w3-margin" style="width:90%">
+            <li>chat ID: an unique identifier for a conversation. It should be unique within the uploaded file</li>
+            <li>chat sequenece: a number that represents the transcript sequence within a conversation.</li>
+            <li>flag: identify if the transcript is said by the agent (i.e. 0), or by the visitor (i.e. 1) </li>
+            <li>transcript: chat content.  </li>
+        </ul>
+        <div style="margin-left:30px; white-space: pre">
+INT-va1appis11-1525554232577-97129,00006,1,THye said they would cancel the stay
+INT-va1appis11-1525554232577-97129,00007,1,and the new hotel stay for tonight at the HIlton in Aruba confirmaton number is XXXX-XXXX-14
+INT-va1appis11-1525554334044-97149,00000,0,Thank you for contacting Global reservation Desk. My name is Jayden. How may I assist you in
+INT-va1appis11-1525554334044-97149,00001,0,As you have an existing reservation.  I could not access that information. However. I’ll
+INT-va1appis11-1525554334044-97149,00001,0,Thank you for showing your patience.ma I have your confirmation number
+INT-va1appis11-1525554334044-97149,00001,0,Thanks for contacting Hilton. My name is Romana. I'm reading the conversation that you've had
+INT-va1appis11-1525554334044-97149,00001,0,We will be glad to assist you.
+INT-va1appis11-1525554334044-97149,00001,1,Hi Hayden....Dave Larton here...we have a reservation for the Hilton Oakland Airport for
+        </div>
+    </div>
+</div>
+
+<script>
+var s_l3_clusters = document.getElementById("l3_clusters");
+var o_l3_clusters = document.getElementById("l3_clusters_val");
+o_l3_clusters.innerHTML = s_l3_clusters.value;
+
+s_l3_clusters.oninput = function() {
+  o_l3_clusters.innerHTML = this.value;
+}
+
+var s_coverage = document.getElementById("coverage");
+var o_coverage = document.getElementById("coverage_val");
+o_coverage.innerHTML = s_coverage.value;
+
+s_coverage.oninput = function() {
+  o_coverage.innerHTML = this.value;
+}
+
+var s_turn_count = document.getElementById("turn_count");
+var o_turn_count = document.getElementById("turn_count_val");
+o_turn_count.innerHTML = s_turn_count.value;
+
+s_turn_count.oninput = function() {
+  o_turn_count.innerHTML = this.value;
+}
+</script>
+</body>
+</html>

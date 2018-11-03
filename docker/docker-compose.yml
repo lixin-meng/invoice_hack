@@ -1,0 +1,25 @@
+---
+version: '3'
+services:
+  #
+  # docker build --squash -t chat_flow_python3 -f Dockerfile_python3 .
+  #
+  hack:
+    image: invoice_hack:v0.0.1
+    container_name: hack_app_dev
+    environment: 
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/project/hack
+      - LC_ALL=en_US.utf-8
+      - LANG=en_US.utf-8
+   # tmpfs:
+    #  - /tmp/rdisk
+    volumes:
+      # - ../../../project:/project
+      - /tmp/rdisk:/tmp/rdisk
+    ports:
+      - "8080:5000"
+    networks: ['hack_net']
+    command: "gunicorn -c /project/hack/env/gunicorn_config.py --chdir /project/hack wsgi:app.app"
+
+networks: {hack_net: {}}

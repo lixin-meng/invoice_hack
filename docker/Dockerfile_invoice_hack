@@ -1,0 +1,11 @@
+FROM chat_flow_python3.6
+
+COPY pkg/hack.tar.gz /
+COPY setup_hack.sh /
+COPY entry_point.sh /
+
+RUN bash -x /setup_hack.sh
+
+EXPOSE 5000
+ENTRYPOINT ["/entry_point.sh"]
+CMD ["gunicorn -c /project/hack/env/gunicorn_config.py --chdir /project/hack wsgi:app.app"]
