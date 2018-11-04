@@ -180,7 +180,7 @@ def webhook():
             'Do you want to schedule a payment?'.format(_amount))
     elif intent == 'helpCreatingBill':
         response_text = ('Sure. I tracked down the details. Is this for'
-            '{} '.format(__vendor_name))
+            '{} '.format(_vendor_name))
     elif intent == 'vendorDetailsAdd':
         response_text = ('{} is not in your vedors'
             'list. Do you want to create one?'.format(_vendor_name))
