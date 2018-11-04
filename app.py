@@ -175,6 +175,7 @@ def webhook():
     response_text = None
     intent = data['queryResult']['intent']['displayName']
     if intent == 'verifyDetails':
+        print('verify details intent')
         response_text = ('I see that you have spent {}$. '
             'Do you want to schedule a payment?'.format(_amount))
         result = {"fulfillmentText": response_text}
@@ -184,6 +185,7 @@ def webhook():
             'list. Do you want to create one?'.format(_vendor_name))
         result = {"fulfillmentText": response_text}
         return str(result), 200
+    print('welcome intent')
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
