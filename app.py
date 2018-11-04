@@ -196,7 +196,9 @@ def webhook():
     return str(result), 200
 
 @app.route('/createVendor', methods=['GET'])
-def createVendor(_vendor_name):
+def createVendor(_vendor_name=None):
+    if _vendor_name is None:
+        _vendor_name = 'Test_vendor'
     """
         POST request to create a Vendor in QBO
         Refer here for other Vendor fields: https://developer.intuit.com/docs/api/accounting/vendor
