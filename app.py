@@ -5,6 +5,7 @@ import pprint
 import json
 import re
 import requests
+import datetime
 
 import sys
 import subprocess
@@ -172,6 +173,7 @@ def webhook():
     _address = _extract['ADDRESS']
     _amount = _extract['AMOUNT']
     _vendor_name = _extract['NAME']
+    VENDOR_NAME = _vendor_name
     response_text = None
     intent = data['queryResult']['intent']['displayName']
     if intent == 'verifyDetails':
@@ -185,12 +187,71 @@ def webhook():
         response_text = ('{} is not in your vendors'
             ' list. Do you want to create one?'.format(_vendor_name))
     elif intent == 'vendorAddressAdd':
+        createVendor(_vendor_name)
         response_text = ('I see that the vendor address is {}.'
             ' We will send payment to that address. Is that right?'.format(
             _address
             ))
     result = {"fulfillmentText": response_text}
     return str(result), 200
+
+@app.route('/createVendor', methods=['GET'])
+def createVendor(_vendor_name):
+    """
+        POST request to create a Vendor in QBO
+        Refer here for other Vendor fields: https://developer.intuit.com/docs/api/accounting/vendor
+    """
+
+    {
+  "refresh_token": "L011550034473lIamf37xV0NWbnrqZzHVAt1Bc6X1cGYbq8eSz",
+  "access_token": "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..Rp_GidRFmLy-oxl-RVcnrQ.2p259iMmoqyBRAxNtmjReQjPZMtcu9hNu4kZzWQBQz5hYHq9VlxuVRWt_lpooNpa3YyUuBiFVauIxzEjviQFrmXCktiV0vwHPYq5x7T6I3_5ygI2jm7Lin5fX8quyt5rNzFikXy3fgj2RW0UehMGXsWzqFopidJlsGRC5_aG0AfjAPexL-B5ZT7m_p178C7-7_NrFMICH5nYtR0-6ACHD9phzDvgX1M78hDF_RRyLgzDVJGttaIgv2HkO5eD1WlTTF1uyQMUgasi1t_q_LWOVorWth9esmL2X5ttRysjpLEmg7qwZTgYkT8t4xSJiMAR6R2ORO8kI_xDvUKdZ2KCZN6J4LQZ3m_8b0wyGRDBkRAUabtOh9dkPDiWPltgiu4K-5T8NrP7sR5jesKugRw0G7hVWRsTzDmy4xVMwIZU6WwC0LNBKH2QfgNP_exccfAPQHx6reyDXhThUOrGUDFBovzadXA2AepV1GUq6nyvpxAoL9p8DmTaYQ6BJL7D2NjieOemMYaObbQp7KwRqQ8OZ3p3_3z57qSAzzC9-_yFgBmx7CgSpdCjB6SY0BDVrwzZSpxgPR8nbRJ358_Iyp-5NuQAGaR64XNub02KouE7fZ60Gq7ALqoIKafI4lfBrZS8X8qiyeLS3xHVIxz_ngWTNmk9yMshmttxWbC_m5GHUffFXtSJEfe3iIGnEsL8KkRj.mqyMEZteboA2-D1wyE76UA",
+  "expires_in": 3600,
+  "x_refresh_token_expires_in": 8726400,
+  "token_type": "bearer"
+}
+
+    config = {"access_token": "eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..Rp_GidRFmLy-oxl-RVcnrQ.2p259iMmoqyBRAxNtmjReQjPZMtcu9hNu4kZzWQBQz5hYHq9VlxuVRWt_lpooNpa3YyUuBiFVauIxzEjviQFrmXCktiV0vwHPYq5x7T6I3_5ygI2jm7Lin5fX8quyt5rNzFikXy3fgj2RW0UehMGXsWzqFopidJlsGRC5_aG0AfjAPexL-B5ZT7m_p178C7-7_NrFMICH5nYtR0-6ACHD9phzDvgX1M78hDF_RRyLgzDVJGttaIgv2HkO5eD1WlTTF1uyQMUgasi1t_q_LWOVorWth9esmL2X5ttRysjpLEmg7qwZTgYkT8t4xSJiMAR6R2ORO8kI_xDvUKdZ2KCZN6J4LQZ3m_8b0wyGRDBkRAUabtOh9dkPDiWPltgiu4K-5T8NrP7sR5jesKugRw0G7hVWRsTzDmy4xVMwIZU6WwC0LNBKH2QfgNP_exccfAPQHx6reyDXhThUOrGUDFBovzadXA2AepV1GUq6nyvpxAoL9p8DmTaYQ6BJL7D2NjieOemMYaObbQp7KwRqQ8OZ3p3_3z57qSAzzC9-_yFgBmx7CgSpdCjB6SY0BDVrwzZSpxgPR8nbRJ358_Iyp-5NuQAGaR64XNub02KouE7fZ60Gq7ALqoIKafI4lfBrZS8X8qiyeLS3xHVIxz_ngWTNmk9yMshmttxWbC_m5GHUffFXtSJEfe3iIGnEsL8KkRj.mqyMEZteboA2-D1wyE76UA",
+    "refresh_token": "L011550034473lIamf37xV0NWbnrqZzHVAt1Bc6X1cGYbq8eSz",
+    "realm_id": "123146163799954",
+    "qbo_base_url": "https://sandbox-quickbooks.api.intuit.com",
+    "client_id": "",
+    "client_secret": "",
+    "discovery_doc": "https://developer.intuit.com/.well-known/openid_sandbox_configuration/"}
+    url = config['qbo_base_url'] + '/v3/company/' + config['realm_id'] + '/vendor?minorversion=12'
+
+    vendor = {
+                "DisplayName": _vendor_name,
+                "CompanyName": _vendor_name,
+                "PrimaryPhone": {
+                    "FreeFormNumber": "123-445-6789"
+                },
+                "PrimaryEmailAddr": {
+                    "Address": "info@abcdesigning.net"
+                },
+                "BillAddr": {
+                    "Line1": "123 Mary Ave",
+                    "City": "Sunnyvale",
+                    "CountrySubDivisionCode": "CA",
+                    "Country": "USA",
+                    "PostalCode": "1111"
+                }
+            }
+
+    headers = {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + config['access_token']
+            }
+
+    r = requests.post(url, headers=headers, data=json.dumps(vendor))
+    print (r.status_code)
+    print (r.content)
+
+    try:
+        response = r.json()["Vendor"]
+    except:
+        response = r.content
+    return str(response), r.status_code
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
