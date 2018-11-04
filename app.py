@@ -195,6 +195,12 @@ def webhook():
     result = {"fulfillmentText": response_text}
     return str(result), 200
 
+
+@app.route('/inner_extract', methods=['GET'])
+def inner_extract():
+    return render_template('wix_page.html')
+
+
 @app.route('/createVendor', methods=['GET'])
 def createVendor(_vendor_name=None):
     if _vendor_name is None:
@@ -254,10 +260,6 @@ def createVendor(_vendor_name=None):
     except:
         response = r.content
     return str(response), r.status_code
-
-    @app.route('/inner_extract', methods=['GET'])
-    def inner_extract():
-        return render_template('wix_page.html')
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
