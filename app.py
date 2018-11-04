@@ -129,7 +129,6 @@ def status(oid=None):
 
     return content, 200
 
-
 @app.route('/extract', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
@@ -166,12 +165,23 @@ def webhook():
     print('data: ', request.get_json())
     print()
     data = request.get_json()
+    status_data, _ = status(oid='latest')
+    _extract = status_data['extract']
+    _address = _extract['ADDRESS']
+    _amount = _extract['AMOUNT']
+    _vendor_name = _extract['NAME']
+    response_text = None
     intent = data['queryResult']['intent']['displayName']
     if intent == 'verifyDetails':
-        response_text = ('I see that you have spent <amount> $ and <due-date>'
-        'is the due date. Do you want to schedule a payment?')
-    result = {"fulfillmentText": "This is a text response"}
-    return str(result), 200
+        response_text = ('I see that you have spent {}$. '
+            'Do you want to schedule a payment?'.format(_amount))
+        result = {"fulfillmentText": response_text}
+        return str(result), 200
+    elif intetnt == 'vendorDetailsAdd':
+        response_text = ('{} is not in your vedors'
+            'list. Do you want to create one?'.format(_vendor_name))
+        result = {"fulfillmentText": response_text}
+        return str(result), 200
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
