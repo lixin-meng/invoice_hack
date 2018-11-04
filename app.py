@@ -179,7 +179,7 @@ def webhook():
             'Do you want to schedule a payment?'.format(_amount))
         result = {"fulfillmentText": response_text}
         return str(result), 200
-    elif intetnt == 'vendorDetailsAdd':
+    elif intent == 'vendorDetailsAdd':
         response_text = ('{} is not in your vedors'
             'list. Do you want to create one?'.format(_vendor_name))
         result = {"fulfillmentText": response_text}
