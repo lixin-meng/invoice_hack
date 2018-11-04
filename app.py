@@ -160,6 +160,13 @@ def upload_file():
     return render_template('extract.html')
 
 
+@app.route('/hook', methods=['POST'])
+def webhook():
+    print('Webhook triggered')
+    print('data: ', request.get_json())
+    print()
+    
+
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
       app.run(debug=True, use_reloader=True)
