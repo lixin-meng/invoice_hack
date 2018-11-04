@@ -170,8 +170,8 @@ def webhook():
     if intent == 'verifyDetails':
         response_text = ('I see that you have spent <amount> $ and <due-date>'
         'is the due date. Do you want to schedule a payment?')
-    response = {"fulfillmentText": "This is a text response"}
-    return response, 200
+    result = {"fulfillmentText": "This is a text response"}
+    return result, 200
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
