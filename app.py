@@ -178,14 +178,19 @@ def webhook():
         print('verify details intent')
         response_text = ('I see that you have spent {}$. '
             'Do you want to schedule a payment?'.format(_amount))
-        result = {"fulfillmentText": response_text}
-        return str(result), 200
+    elif intent == 'helpCreatingBill':
+        response_text = ('Sure. I tracked down the details. Is this for'
+            '{} '.format(__vendor_name))
     elif intent == 'vendorDetailsAdd':
         response_text = ('{} is not in your vedors'
             'list. Do you want to create one?'.format(_vendor_name))
-        result = {"fulfillmentText": response_text}
-        return str(result), 200
-    print('welcome intent')
+    elif intent == 'vendorAddressAdd':
+        response_text = ('I see that the vendor address is {}.'
+            ' We will send payment to that address. Is that right?'.format(
+            _address
+            ))
+    result = {"fulfillmentText": response_text}
+    return str(result), 200
 
 if __name__ == "__main__":
       app.secret_key = os.urandom(12)
