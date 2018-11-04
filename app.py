@@ -176,7 +176,7 @@ def webhook():
     intent = data['queryResult']['intent']['displayName']
     if intent == 'verifyDetails':
         print('verify details intent')
-        response_text = ('I see that you have spent {}$. '
+        response_text = ('I see that you have spent ${}. '
             'Do you want to schedule a payment?'.format(_amount))
     elif intent == 'helpCreatingBill':
         response_text = ('Sure. I tracked down the details. Is this for'
