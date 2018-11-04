@@ -2,6 +2,7 @@ import base64
 import io
 import os
 import pprint
+import json
 import re
 import requests
 
@@ -165,7 +166,8 @@ def webhook():
     print('data: ', request.get_json())
     print()
     data = request.get_json()
-    status_data, _ = status(oid='latest')
+    _data, _ = status(oid='latest')
+    status_data = json.loads(_data)
     _extract = status_data['extract']
     _address = _extract['ADDRESS']
     _amount = _extract['AMOUNT']
